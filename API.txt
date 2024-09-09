@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/material_dynamic_neutral_variant70"
+    android:padding="20dp"
+    >
+
+
+    <TextView
+        android:id="@+id/totalquestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total no. of question"
+        android:background="@android:color/holo_orange_dark"
+        android:layout_margin="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="26dp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This will be our question"
+        android:background="@android:color/holo_orange_light"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:layout_above="@+id/choices_layout"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/choices_layout"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ans_a"
+            android:backgroundTint="@color/white"
+            android:text="Ans A"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/black"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ans_b"
+                android:backgroundTint="@color/white"
+                android:text="Ans B"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ans_c"
+                android:backgroundTint="@color/white"
+                android:text="Ans C"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ans_d"
+                android:backgroundTint="@color/white"
+                android:text="Ans D"
+                android:layout_marginTop="5dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sub_btn"
+                android:backgroundTint="@android:color/holo_green_light"
+                android:text="Submit"
+                android:layout_marginTop="10dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:layout_below="@+id/choices_layout"/>
+
+
+</RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.example.quiz_app;
+
+import android.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.os.AsyncTask;
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.UnknownHostException;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.util.Log;
+
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    TextView questionTextView;
+    TextView totalquestionTextView;
+    Button ans_a,ans_b,ans_c,ans_d;
+    Button sub_btn;
+
+    int score=0;
+
+    int totalQuestion=ques_ans.question.length;
+    int currentQuestionIndex=0;
+    String selectedAnswer="";
+
+    @Override
+    protected void onCreate(Bundle savedInstancesState) {
+        super.onCreate(savedInstancesState);
+        setContentView(R.layout.activity_main);
+
+        totalquestionTextView = findViewById(R.id.totalquestion);
+        questionTextView = findViewById(R.id.question);
+        ans_a = findViewById(R.id.ans_a);
+        ans_b = findViewById(R.id.ans_b);
+        ans_c = findViewById(R.id.ans_c);
+        ans_d = findViewById(R.id.ans_d);
+        sub_btn = findViewById(R.id.sub_btn);
+
+        ans_a.setOnClickListener(this);
+        ans_b.setOnClickListener(this);
+        ans_c.setOnClickListener(this);
+        ans_d.setOnClickListener(this);
+        sub_btn.setOnClickListener(this);
+
+
+
+        totalquestionTextView.setText("Total question :" + totalQuestion);
+
+        loadNewQuestion();
+    }
+    private void loadNewQuestion(){
+            if (currentQuestionIndex == totalQuestion) {
+                finishQuiz();
+                return;
+            }
+            questionTextView.setText(ques_ans.question[currentQuestionIndex]);
+            ans_a.setText(ques_ans.choices[currentQuestionIndex][0]);
+            ans_b.setText(ques_ans.choices[currentQuestionIndex][1]);
+            ans_c.setText(ques_ans.choices[currentQuestionIndex][2]);
+            ans_d.setText(ques_ans.choices[currentQuestionIndex][3]);
+
+            selectedAnswer = "";
+
+        }
+
+    private void finishQuiz () {
+            String passStatus;
+            if (score >= totalQuestion * 0.6) {
+                passStatus = "passed";
+
+            } else {
+                passStatus = "failed";
+            }
+            new AlertDialog.Builder(this)
+                    .setTitle(passStatus)
+                    .setMessage("your score is " + score + " set of " + totalQuestion)
+                    .setPositiveButton("restart", ((dialog, i) -> restartQuiz()))
+                    .setCancelable(false)
+                    .show();
+        }
+
+        private void restartQuiz () {
+            score = 0;
+            currentQuestionIndex = 0;
+            loadNewQuestion();
+        }
+     @Override
+     public void onClick (View view){
+            ans_a.setBackgroundColor(Color.WHITE);
+            ans_b.setBackgroundColor(Color.WHITE);
+            ans_c.setBackgroundColor(Color.WHITE);
+            ans_d.setBackgroundColor(Color.WHITE);
+
+            Button clickedButton = (Button) view;
+            if (clickedButton.getId() == R.id.sub_btn) {
+                if (!selectedAnswer.isEmpty()) {
+                    if (selectedAnswer.equals(ques_ans.correct_ans[currentQuestionIndex])) {
+                        score++;
+                    } else {
+
+                    }
+                    currentQuestionIndex++;
+                    loadNewQuestion();
+                } else {
+                }
+                }else{
+                    selectedAnswer = clickedButton.getText().toString();
+                    clickedButton.setBackgroundColor(Color.YELLOW);
+                }
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package com.example.quiz_app;
+
+public class ques_ans {
+    public static String question[]={
+            "what is the value of 10+26 ?",
+            "who invented telephone ?",
+            "who is father of computer ?",
+            "in the given option which is the example of system software ?",
+            "who is the founder of spaceX ?"
+    };
+    public static String choices[][]={
+            {"26","10","30","36"},
+            {"graham bell","einstien","edison","none of the above"},
+            {"chales babbage","albert","newton","all of the above"},
+            {"windows","linux","macos","all of the above"},
+            {"elon musk","steve job","jeff bezos","none of the above"}
+    };
+    public static String correct_ans[]={
+            "36",
+            "graham bell",
+            "chales babbage",
+            "all of the above",
+            "elon musk"
+    };
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Quiz_app"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

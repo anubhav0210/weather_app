@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="#79070809">
+
+
+    <ImageView
+        android:id="@+id/bimage"
+        android:layout_width="150dp"
+        android:layout_height="120dp"
+        app:srcCompat="@drawable/image"
+
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="100dp"
+        />
+
+    <TextView
+        android:id="@+id/viewtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WEATHER APP"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/white"
+        android:textSize="52dp"
+        android:textFontWeight="1000"
+        android:textStyle="bold"
+        />
+    <EditText
+        android:id="@+id/cityname"
+        android:layout_width="270dp"
+        android:layout_height="72dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="240dp"
+        android:background="#0202A6"
+        android:hint="Name City"
+        android:textColorHint="@color/white"
+        android:textAlignment="center"
+        android:textSize="30dp"
+        android:textColor="@color/white"
+        />
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="172dp"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="320dp"
+        android:layout_marginRight="25dp"
+        android:textSize="30dp"
+        />
+
+    <TextView
+        android:id="@+id/weather"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="400dp"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:textFontWeight="500"
+        android:fontFamily=""
+        android:textStyle="bold"
+
+        android:textColor="@color/white"
+        />
+
+
+</RelativeLayout>
